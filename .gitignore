@@ -31,3 +31,8 @@ node_modules
 /scripts
 /src/environment.js
 /src/environment.ts
+
+# Cypress autogenerate??
+cypress
+test/e2e/videos
+test/e2e/screenshots
