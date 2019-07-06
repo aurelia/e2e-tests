@@ -13,6 +13,6 @@
   "itemWithCount_interval": "(0)$t(itemWithCount_plural);(1)$t(itemWithCount);(2-7)$t(itemWithCount_plural);(7-inf){viele Artikel};",
 
   "html": "Dies ist ein <i>HTML</i> Inhalt",
-  "pretest": "Herr. ",
+  "pretest": "Herr ",
   "post-test": " Himmel"
 }
