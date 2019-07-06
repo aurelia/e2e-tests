@@ -9,7 +9,12 @@
     ],
     "types": [
       "cypress"
-    ]
+    ],
+    "typeRoots": [
+      "../../node_modules/@types",
+      "../../node_modules/cypress/types"
+    ],
+    "resolveJsonModule": true
   },
   "include": [
     "**/*.ts"

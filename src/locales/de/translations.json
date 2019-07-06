@@ -1,0 +1,18 @@
+{
+  "simple": {
+    "text": "Einfacher Text",
+    "attr": "Einfaches Attribut"
+  },
+
+  "status": "Status ist unbekannt",
+  "status_dispatched": "Versand am {{date}}",
+  "status_delivered": "geliefert am {{date}}",
+
+  "itemWithCount": "{{count}} Artikel",
+  "itemWithCount_plural": "{{count}} Artikel",
+  "itemWithCount_interval": "(0)$t(itemWithCount_plural);(1)$t(itemWithCount);(2-7)$t(itemWithCount_plural);(7-inf){viele Artikel};",
+
+  "html": "Dies ist ein <i>HTML</i> Inhalt",
+  "pretest": "Herr. ",
+  "post-test": " Himmel"
+}
