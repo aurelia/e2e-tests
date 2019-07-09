@@ -7,6 +7,8 @@
   "status": "Status ist unbekannt",
   "status_dispatched": "Versand am {{date}}",
   "status_delivered": "geliefert am {{date}}",
+  "custom_interpolation_brace": "geliefert am {date}",
+  "custom_interpolation_es6_syntax": "geliefert am ${date}",
 
   "itemWithCount": "{{count}} Artikel",
   "itemWithCount_plural": "{{count}} Artikel",
@@ -14,5 +16,7 @@
 
   "html": "Dies ist ein <i>HTML</i> Inhalt",
   "pretest": "Herr ",
-  "post-test": " Himmel"
+  "post-test": " Himmel",
+
+  "imgPath": "bar.jpg"
 }

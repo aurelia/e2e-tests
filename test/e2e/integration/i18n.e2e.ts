@@ -1,21 +1,71 @@
 import * as en from "../../../src/locales/en/translations.json";
 import * as de from "../../../src/locales/de/translations.json";
 
+interface Spec {
+  name: string;
+  suts: Array<{ selector: string, expected?: string, expectedDe?: string }>;
+  isHtmlContent?: boolean;
+}
 describe('I18N', () => {
+  const changeCurrentLocaleToDe = () => { cy.get("#locale-changer-de").click(); };
+
+  const assertContent = (selector: string, expected: string, isHtmlContent: boolean | undefined = false) => {
+    cy.get(selector).should(isHtmlContent ? "have.html" : "have.text", expected);
+  };
+
   beforeEach(() => {
     cy.visit('/');
   });
 
-  const dispatchedOn = new Date(2020, 1, 10, 5, 15).toString(), deliveredOn = new Date(2021, 1, 10, 5, 15).toString();
+  const dispatchedOn = new Date(2020, 1, 10, 5, 15).toString(), deliveredOn = new Date(2021, 1, 10, 5, 15).toString(),
+    enDeliveredText = en.status_delivered.replace("{{date}}", deliveredOn),
+    deDeliveredText = de.status_delivered.replace("{{date}}", deliveredOn);
 
-  const tests = [
+  const enSpecificTests: Spec[] = [
     {
-      name: 'should work for simple html', ignoreForDe: true,
-      suts: [{ selector: `#i18n-simple[title="${en.simple.attr}"]`, expected: en.simple.text, expectedDe: undefined }]
+      name: 'should work for attribute translation',
+      suts: [{ selector: `#i18n-attr[title="${en.simple.attr}"]`, expected: "attribute test" }]
     },
     {
-      name: 'should work for simple html', ignoreForEn: true,
-      suts: [{ selector: `#i18n-simple[title="${de.simple.attr}"]`, expected: undefined, expectedDe: de.simple.text }]
+      name: 'should work for semicolon delimited multiple attributes',
+      suts: [{ selector: `#i18n-multiple-attr[title="${en.simple.attr}"]`, expected: en.simple.text }]
+    },
+    {
+      name: 'should work when same key is used for multiple attributes',
+      suts: [{ selector: `#i18n-multiple-attr-same-key[title="${en.simple.attr}"][data-foo="${en.simple.attr}"]`, expected: en.simple.text }]
+    },
+  ];
+
+  const deSpecificTests: Spec[] = [
+    {
+      name: 'should work for attribute translation',
+      suts: [{ selector: `#i18n-attr[title="${de.simple.attr}"]`, expectedDe: "attribute test" }]
+    },
+    {
+      name: 'should work for semicolon delimited multiple attributes',
+      suts: [{ selector: `#i18n-multiple-attr[title="${de.simple.attr}"]`, expectedDe: de.simple.text }]
+    },
+    {
+      name: 'should work when same key is used for multiple attributes',
+      suts: [{ selector: `#i18n-multiple-attr-same-key[title="${de.simple.attr}"][data-foo="${de.simple.attr}"]`, expectedDe: de.simple.text }]
+    },
+  ];
+  const tests: Spec[] = [
+    {
+      name: 'should work for simple text-content',
+      suts: [{ selector: `#i18n-simple`, expected: en.simple.text, expectedDe: de.simple.text }]
+    },
+    {
+      name: 'should work for nested translations',
+      suts: [{ selector: `#i18n-nested`, expected: `${en.simple.text} ${en.simple.attr}`, expectedDe: `${de.simple.text} ${de.simple.attr}` }]
+    },
+    {
+      name: 'should work for interpolation',
+      suts: [
+        { selector: `#i18n-interpolation`, expected: enDeliveredText, expectedDe: deDeliveredText },
+        { selector: `#i18n-interpolation-custom`, expected: enDeliveredText, expectedDe: deDeliveredText },
+        { selector: `#i18n-interpolation-es6`, expected: enDeliveredText, expectedDe: deDeliveredText },
+      ]
     },
     {
       name: 'should work for context specific translation',
@@ -26,28 +76,24 @@ describe('I18N', () => {
           expected: en.status_dispatched.replace("{{date}}", dispatchedOn),
           expectedDe: de.status_dispatched.replace("{{date}}", dispatchedOn),
         },
-        {
-          selector: `#i18n-ctx-delivered`,
-          expected: en.status_delivered.replace("{{date}}", deliveredOn),
-          expectedDe: de.status_delivered.replace("{{date}}", deliveredOn),
-        },
+        { selector: `#i18n-ctx-delivered`, expected: enDeliveredText, expectedDe: deDeliveredText, },
       ]
     },
     {
       name: 'should work for pluralization',
       suts: [
         {
-          selector: `#i18n-items-0`,
+          selector: `#i18n-items-plural-0`,
           expected: en.itemWithCount_plural.replace("{{count}}", "0"),
           expectedDe: de.itemWithCount_plural.replace("{{count}}", "0")
         },
         {
-          selector: `#i18n-items-1`,
+          selector: `#i18n-items-plural-1`,
           expected: en.itemWithCount.replace("{{count}}", "1"),
           expectedDe: de.itemWithCount.replace("{{count}}", "1"),
         },
         {
-          selector: `#i18n-items-10`,
+          selector: `#i18n-items-plural-10`,
           expected: en.itemWithCount_plural.replace("{{count}}", "10"),
           expectedDe: de.itemWithCount_plural.replace("{{count}}", "10"),
         },
@@ -68,6 +114,10 @@ describe('I18N', () => {
     {
       name: 'should work with html content', isHtmlContent: true,
       suts: [{ selector: `#i18n-html`, expected: en.html, expectedDe: de.html },]
+    },
+    {
+      name: 'should work with prepend and append',
+      suts: [{ selector: `#i18n-prepend-append`, expected: `${en.pretest}Blue${en["post-test"]}`, expectedDe: `${de.pretest}Blue${de["post-test"]}` },]
     },
     {
       name: 'should work with "t" value converter, but does not update the value on locale change as it is non-signalable',
@@ -112,34 +162,36 @@ describe('I18N', () => {
   ]
 
   describe("translates via HTML that", () => {
-    for (const { name, suts, isHtmlContent, ignoreForEn } of tests) {
-      if (!ignoreForEn) {
-        it(name, () => {
-          for (const sut of suts) {
-            assertContent(sut.selector, sut.expected as string, isHtmlContent);
-          }
-        });
-      }
+    for (const { name, suts, isHtmlContent } of [...tests, ...enSpecificTests]) {
+      it(name, () => {
+        for (const sut of suts) {
+          assertContent(sut.selector, sut.expected as string, isHtmlContent);
+        }
+      });
     }
+    it("reacts to 'aurelia-relativetime-signal' signal for relative time binding behavior", () => {
+      cy.get("#rt-changer").click();
+      // rt VC does not react to the signal, thus the content should stay same
+      assertContent("#i18n-rt-vc", " 2 hours ago ");
+      assertContent("#i18n-rt-bb", " 1 year ago ");
+    });
   });
 
 
   describe("updates translation on locale change that", () => {
 
-    beforeEach(() => { cy.get("#locale-changer-de").click(); });
+    beforeEach(() => { changeCurrentLocaleToDe(); });
 
-    for (const { name, suts, isHtmlContent, ignoreForDe } of tests) {
-      if (!ignoreForDe) {
-        it(name, () => {
-          for (const sut of suts) {
-            assertContent(sut.selector, sut.expectedDe as string, isHtmlContent);
-          }
-        });
-      }
+    for (const { name, suts, isHtmlContent } of [...tests, ...deSpecificTests]) {
+      it(name, () => {
+        for (const sut of suts) {
+          assertContent(sut.selector, sut.expectedDe as string, isHtmlContent);
+        }
+      });
     }
   });
 
-  describe("facilitates translation via code - ", () => {
+  describe("facilitates translation via code", () => {
     const tests = [
       {
         name: "simple",
@@ -161,6 +213,11 @@ describe('I18N', () => {
         name: "nf",
         suts: [{ selector: "#i18n-code-num", expected: "123,456,789" }]
       },
+      ...["simple", "locale", "currency", "text", "minus"].map((part) => (
+        {
+          name: `uf - ${part}`,
+          suts: [{ selector: `#i18n-code-num-uf-${part}`, expected: part === "minus" ? "-123456789.12" : "123456789.12" }]
+        })),
       {
         name: "df",
         suts: [{ selector: "#i18n-code-date", expected: "2/10/2021" }]
@@ -178,9 +235,10 @@ describe('I18N', () => {
       });
     }
   });
+
+  it("sets the src attribute of img elements by default", () => {
+    cy.get("#i18n-img").should("have.attr", "src", en.imgPath);
+    changeCurrentLocaleToDe();
+    cy.get("#i18n-img").should("have.attr", "src", de.imgPath);
+  });
 });
-
-function assertContent(selector: string, expected: string, isHtmlContent: boolean | undefined = false) {
-  cy.get(selector).should(isHtmlContent ? "have.html" : "have.text", expected);
-}
-
