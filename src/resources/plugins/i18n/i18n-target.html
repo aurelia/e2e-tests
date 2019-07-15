@@ -1,4 +1,5 @@
 <template>
+  <require from="./custom-message"></require>
 
   <button id="locale-changer-de" click.delegate="changeLocale('de')">DE</button>
   <button id="rt-changer" click.delegate="changeMyDate()">Change my date</button>
@@ -67,4 +68,8 @@
     <span id="i18n-code-date">${translations.date}</span>
     <span id="i18n-code-rtime">${translations.rtime}</span>
   </div>
+
+  <custom-message data-test-id="custom-element-interpolated" message="${'simple.text' | t}"></custom-message>
+  <custom-message data-test-id="custom-element-target-bindable" t="[message]simple.text"></custom-message>
+  <custom-message data-test-id="custom-element-with-params" t="[message]itemWithCount" t-params.bind="{count: 0}"></custom-message>
 </template>
