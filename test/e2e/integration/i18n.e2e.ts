@@ -258,6 +258,22 @@ describe('I18N', () => {
     it("should support locale changes", () => {
       changeCurrentLocaleToDe();
       assertContent("[data-test-id='custom-element-target-bindable'] div", de.simple.text);
-    })
-  })
+    });
+  });
+
+  describe("treating missing keys", () => {
+    it("should by default replace the content with the missing key name", () => {
+      assertContent("[data-test-id='missing-key']", "missing-key");
+    });
+
+    it("should allow to keep original content if key not found", () => {
+      cy.visit('/?skipkey=true');
+      cy.reload();
+
+      assertContent("[data-test-id='missing-key']", "non-translated text");
+      
+      cy.visit('/');
+      cy.reload();
+    });
+  });
 });

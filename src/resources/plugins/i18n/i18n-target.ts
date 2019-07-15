@@ -15,7 +15,7 @@ export class I18NTarget {
     this.myDate = new Date();
     this.myDate.setHours(this.myDate.getHours() - 2);
 
-    relativeTime.addTranslationResource("")
+    relativeTime.addTranslationResource("", "");
 
     this.translations = {
       simple: this.i18n.tr("simple.text"),
