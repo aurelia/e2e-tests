@@ -15,8 +15,6 @@ export class I18NTarget {
     this.myDate = new Date();
     this.myDate.setHours(this.myDate.getHours() - 2);
 
-    relativeTime.addTranslationResource("")
-
     this.translations = {
       simple: this.i18n.tr("simple.text"),
       context: this.i18n.tr("status", { context: "dispatched", date: this.dispatchedOn }),

@@ -1,5 +1,5 @@
 import { Aurelia, PLATFORM } from 'aurelia-framework'
-import { TCustomAttribute } from "aurelia-i18n";
+import { TCustomAttribute, AureliaEnhancedOptions } from "aurelia-i18n";
 import intervalPlural = require("i18next-intervalplural-postprocessor");
 import environment from './environment';
 import * as en from "./locales/en/translations.json";
@@ -21,8 +21,9 @@ export function configure(aurelia: Aurelia) {
         resources: {
           en: { translation: en },
           de: { translation: de }
-        }
-      });
+        },
+        skipTranslationOnMissingKey: !!new URL(location.href).searchParams.get("skipkey")
+      } as AureliaEnhancedOptions);
     });
 
   aurelia.use.developmentLogging(environment.debug ? 'debug' : 'warn');

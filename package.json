@@ -22,7 +22,7 @@
     "aurelia-fetch-client": "latest",
     "aurelia-history": "latest",
     "aurelia-history-browser": "latest",
-    "aurelia-i18n": "^2.3.2",
+    "aurelia-i18n": "^3.0.0-beta.7",
     "aurelia-loader": "latest",
     "aurelia-loader-default": "latest",
     "aurelia-logging": "latest",
